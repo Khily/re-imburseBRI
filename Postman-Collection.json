@@ -1,0 +1,227 @@
+{
+  "info": {
+    "name": "Reimburse BBM API",
+    "description": "API Collection untuk aplikasi reimbursement BBM",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "auth_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/"
+      }
+    },
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/auth/register",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@gmail.com\",\n  \"password\": \"password123\",\n  \"pemilik_mobil\": \"Test User\",\n  \"personal_number\": \"TST001\",\n  \"plat_nomor\": \"B9999TST\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Validasi field wajib sebelum request",
+              "const body = JSON.parse(pm.request.body.raw);",
+              "const requiredFields = ['email', 'password', 'pemilik_mobil', 'personal_number', 'plat_nomor'];",
+              "",
+              "for (let field of requiredFields) {",
+              "    if (!body[field]) {",
+              "        throw new Error(`Field ${field} harus diisi!`);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set('auth_token', response.data.session.access_token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get User Limit",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/user/limit",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Upload Reimburse",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/user/reimburse",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "harga_bbm",
+              "value": "75000",
+              "type": "text"
+            },
+            {
+              "key": "spedometer_sebelum",
+              "value": "12345",
+              "type": "text"
+            },
+            {
+              "key": "spedometer_setelah",
+              "value": "12445",
+              "type": "text"
+            },
+            {
+              "key": "jenis_bbm",
+              "value": "Pertamax",
+              "type": "text"
+            },
+            {
+              "key": "harga_per_liter",
+              "value": "15000",
+              "type": "text"
+            },
+            {
+              "key": "jumlah_liter_bbm",
+              "value": "5.0",
+              "type": "text"
+            },
+            {
+              "key": "struk_pembelian",
+              "type": "file",
+              "description": "Upload file gambar struk pembelian - WAJIB DIISI!"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Reminder untuk check field wajib",
+              "console.log('REMINDER: Pastikan semua field berikut sudah diisi:');",
+              "console.log('- harga_bbm (angka)');",
+              "console.log('- spedometer_sebelum (angka)');",
+              "console.log('- jenis_bbm (text)');",
+              "console.log('- harga_per_liter (angka)');",
+              "console.log('- jumlah_liter_bbm (angka decimal)');",
+              "console.log('- struk_pembelian (file - WAJIB!)');",
+              "console.log('- Authorization token sudah diset');"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Reimburse History",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/user/reimburse/history",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Get All Roles (Admin)",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/admin/role",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Get All Users (Admin)",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/admin/user",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Get All Reimburse (Admin)",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/admin/reimburse",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ]
+      }
+    }
+  ]
+}
