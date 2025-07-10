@@ -70,7 +70,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+          "raw": "{\n  \"email\": \"user1234@gmail.com\",\n  \"password\": \"password123\"\n}"
         }
       },
       "event": [

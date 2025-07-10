@@ -1,5 +1,46 @@
 # Troubleshooting Guide - Reimburse BBM API
 
+## Error: "Email atau password salah" (Login)
+
+### Kemungkinan Penyebab:
+1. **Email belum dikonfirmasi** - User terdaftar tapi email belum diverifikasi
+2. **Case sensitivity** - Email harus sama persis dengan yang digunakan saat registrasi
+3. **Password salah** - Password tidak match dengan yang di database
+4. **User tidak ada** - User belum terdaftar di database
+
+### Solusi:
+
+#### 1. Cek Status Email Confirmation
+```bash
+node email-confirm.js --list
+```
+
+#### 2. Konfirmasi Email User (Development Only)
+```bash
+node email-confirm.js --confirm
+```
+
+#### 3. Pastikan Email Case Match
+- Gunakan email yang sama persis dengan saat registrasi
+- Supabase kadang case-sensitive untuk email
+- Contoh: `user1234@gmail.com` ≠ `User1234@gmail.com`
+
+#### 4. Reset Password (jika perlu)
+```javascript
+// Via Supabase dashboard atau script
+const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+```
+
+### Contoh Login yang Benar:
+```json
+{
+  "email": "user1234@gmail.com", 
+  "password": "password123"
+}
+```
+
+---
+
 ## Error: "Semua field harus diisi"
 
 ### 1. Endpoint Register User
